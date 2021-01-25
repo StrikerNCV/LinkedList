@@ -1,0 +1,131 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
+typedef struct Lista_Encadeada {
+	struct Lista_Encadeada_Node* primeiro;
+} Lista_Encadeada;
+
+typedef struct Lista_Encadeada_Node {
+	int info;
+	struct Lista_Encadeada_Node* prox;
+} Lista_Encadeada_Node;
+
+
+Lista_Encadeada* ListaEncadeada_Criar();
+short ListaEncadeada_Inserir(Lista_Encadeada* listaEncadeada, int valor_inserir);
+short ListaEncadeada_Remover(Lista_Encadeada* listaEncadeada, int valor_remover);
+
+Lista_Encadeada* ListaEncadeada_Criar() {
+	Lista_Encadeada* ListaEncadeada = (Lista_Encadeada*)malloc(sizeof(Lista_Encadeada));
+	ListaEncadeada->primeiro = NULL;
+    return ListaEncadeada;
+}
+
+short ListaEncadeada_Inserir(Lista_Encadeada* listaEncadeada, int valor_inserir) {
+	Lista_Encadeada_Node* novoNo = (Lista_Encadeada_Node*)malloc(sizeof(Lista_Encadeada_Node));
+
+	if (novoNo != NULL) {
+		novoNo->info = valor_inserir;
+		novoNo->prox = NULL;
+
+		if (listaEncadeada->primeiro != NULL) {
+			novoNo->prox = listaEncadeada->primeiro;
+		}
+		listaEncadeada->primeiro = novoNo;
+	}
+	return (novoNo != NULL);
+}
+
+short ListaEncadeada_Remover(Lista_Encadeada* listaEncadeada, int valor_remover) {
+	if (listaEncadeada->primeiro == NULL) {
+		return 0;
+	}
+	Lista_Encadeada_Node* node = listaEncadeada->primeiro;
+	Lista_Encadeada_Node* nodeAnterior = listaEncadeada->primeiro;
+
+	short encontrado = 0;
+	while (node != NULL && !encontrado) {
+		if (node->info == valor_remover) {
+			encontrado = 1;
+		} else {
+			nodeAnterior = node;
+			node = node->prox;
+		}
+	}
+
+	if (encontrado) {
+		if (node == listaEncadeada->primeiro) {
+			listaEncadeada->primeiro = node->prox;
+		} else {
+			nodeAnterior->prox = node->prox;
+		}
+		free(node);
+	}
+    return encontrado;
+}
+
+void ListaEncadeada_Imprimir(Lista_Encadeada* listaEncadeada) {
+	Lista_Encadeada_Node* node = listaEncadeada->primeiro;
+	printf("Elementos da Lista: {");
+	while (node != NULL) {
+		printf("%d", node->info);
+		if (node->prox != NULL) {
+			printf(", ");
+		}
+		node = node->prox;
+	}
+	printf("}\n");
+}
+
+int main(void) {
+	Lista_Encadeada* lista1 = ListaEncadeada_Criar();
+
+	int opcao_menu, numero_aux1, numero_aux2, resposta;
+	do {
+		printf(" 1 - Inserir na lista\n");
+		printf(" 2 - Remover da lista\n");
+		printf(" 3 - Imprimir a lista\n");
+		printf(" 0 - Sair\n");
+		printf("Opcao: ");
+		scanf("%d", &opcao_menu);
+		getchar();
+		printf("\n");
+
+		switch (opcao_menu) {
+			case 0:
+				printf("Programa finalizado. Pressione [ENTER] para fechar.");
+				break;
+			case 1:
+				printf("Digite o valor para inserir: \n");
+				scanf("%d", &numero_aux1);
+				getchar();
+				ListaEncadeada_Inserir(lista1, numero_aux1);
+				printf("\tNumero inserido com sucesso.\n");
+        ListaEncadeada_Imprimir(lista1);
+        printf("\n");
+				break;
+			case 2:
+				ListaEncadeada_Imprimir(lista1);
+				printf("Digite o valor para remover: \n");
+				scanf("%d", &numero_aux1);
+				getchar();
+				resposta = ListaEncadeada_Remover(lista1, numero_aux1);
+				if (resposta) {
+					printf("\tNumero removido com sucesso.\n");
+				} else {
+					printf("\tNumero nao encontrado.\n");
+				}
+        printf("\n");
+				break;
+			case 3:
+				ListaEncadeada_Imprimir(lista1);
+        printf("\n");
+				break;
+		}
+	} while (opcao_menu != 0);
+
+	getchar();
+	return 0;
+}
